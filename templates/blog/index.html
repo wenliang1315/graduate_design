@@ -1,0 +1,119 @@
+{% extends "blog/base.html" %}
+{% load static %}
+{% load staticfiles %}
+{% block title %}Welcome! 欢迎新朋友{% endblock %}
+{% block startpage %}
+    <br/>
+    <div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="carousel slide" id="carousel-487796">
+				<ol class="carousel-indicators">
+					<li data-slide-to="0" data-target="#carousel-487796">
+					</li>
+					<li data-slide-to="1" data-target="#carousel-487796">
+					</li>
+					<li data-slide-to="2" data-target="#carousel-487796" class="active">
+					</li>
+				</ol>
+				<div class="carousel-inner">
+					<div class="item">
+						<img alt="" src="{% static "img/111.jpg" %}" />
+						<div class="carousel-caption">
+							<h3>
+								一次说走就走的旅行
+							</h3>
+							<p>
+								在地图上选一个你想去的地方，给自己来一次说走就走的旅行。不用担心住宿，因为已经遍布全球的短租房服务，一定能让你感到宾至如归。
+							</p>
+						</div>
+					</div>
+					<div class="item">
+						<img alt="" src="{% static "img/222.jpg" %}" />
+						<div class="carousel-caption">
+							<h3>
+								享受各地风光的乐趣
+							</h3>
+							<p>
+								带上你的家人和孩子，去世界各地感受那里的风土人情。无论是阳光、海滩的热情，还是森林、山谷的幽静，总有各式各样风格的房子适合你。
+							</p>
+						</div>
+					</div>
+					<div class="item active">
+						<img alt="" src="{% static "img/333.jpg" %}" />
+						<div class="carousel-caption">
+							<h3>
+								感受文化与艺术的熏陶
+							</h3>
+							<p>
+								去一趟圣彼得大教堂，静心于宗教文化的沉淀；走进巴黎卢浮宫，感受建筑艺术的魅力。每一次旅途的都是学习，每一晚的安然入睡都有专业的管家为你保障。
+							</p>
+						</div>
+					</div>
+				</div> <a data-slide="prev" href="#carousel-487796" class="left carousel-control">‹</a> <a data-slide="next" href="#carousel-487796" class="right carousel-control">›</a>
+			</div>
+		</div>
+	</div>
+</div>
+            <div class="jumbotron">
+				<h2>
+					欢迎访问短租房应用平台服务质量数据采集分析系统！
+				</h2>
+				<p>
+					Welcome to the Serve Quality of Short-Rent Information Crawler and Analysis System!
+                <br/>
+                    This is the homepage of the website.  In here, you can search information or get the data analysis result that you want.
+                <br/>
+                    Let's begin our fantastic adventure from Signuping a account now！
+                </p>
+                <br/>
+                <p>
+					<a class="btn btn-primary btn-large" href="{% url 'signup' %}">Signup Now!</a>
+				</p>
+			</div>
+{% endblock %}
+{% block content %}
+    <div class="row">
+		<div class="col-md-4">
+			<h2>
+				短租房服务
+			</h2>
+			<p>
+				传统租赁市场上租客的租赁时间一般为半年到几年不等，“短租房” 就是将这个时间缩短，提供从一日起到几个月的租赁服务。
+                由于短租房市场日益成熟，国内互联网企业开始涉足这个市场，开办短租房信息网站，为房东房源提供一个展示和出租平台。
+                同时，也为商务旅游、家庭出游等人群短租提供方便。
+			</p>
+			<p>
+				<a class="btn" href="http://www.xiaozhu.com/">View details »</a>
+			</p>
+		</div>
+		<div class="col-md-4">
+			<h2>
+				关于本系统
+			</h2>
+			<p>
+				 一个关于短租房应用平台的数据采集系统，对采集到的数据运用服务质量相关体系打分，
+                同时满足用户对于短租房应用平台某一类特定数据的获取和参考，以及满足企业管理者对于其提供的服务的服务质量的自我评估，
+                推动房东和消费者双方更好地做出选择。
+			</p>
+			<p>
+				<a class="btn" href="http://baike.so.com/doc/4991910-5215737.html">View details »</a>
+			</p>
+		</div>
+		<div class="col-md-4">
+			<h2>
+				本站框架
+			</h2>
+			<p>
+				Django是一个开放源代码的Web应用框架，由Python写成。
+                采用了MVC的框架模式，即模型M，视图V和控制器C。它最初是被开发来用于管理劳伦斯出版集团旗下的一些以新闻内容为主的网站的，即是CMS（内容管理系统）软件。
+                这套框架是以比利时的吉普赛爵士吉他手Django Reinhardt来命名的。
+			</p>
+			<p>
+				<a class="btn" href="https://www.djangoproject.com/">View details »</a>
+			</p>
+		</div>
+	</div>
+
+
+{% endblock %}
