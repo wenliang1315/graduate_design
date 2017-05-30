@@ -4,17 +4,22 @@
 {% block title %}信息查询{% endblock %}
 
 {% block content %}
-<br/><br/><br/><br/><br/>
+
+    <div class="page-header">
+				<h1>
+					&emsp;&emsp;&emsp;&emsp;信息查询 <small>——房屋信息的综合查询</small>
+				</h1>
+			</div>
     <div class="container">
         <div class="row">
             <div class="col-md-10 col-md-offset-1">
                 <div class="col-md-2">
-                    <div class="list-group">
-                        <a href="{% url 'search_data' %}" class="list-group-item" id="id_city_all">
+                    <div class="list-group" >
+                        <a href="{% url 'search_data' %}" class="list-group-item active"  id="id_city_all">
                             全部房源
                         </a>
                         {% for city in city_list %}
-                            <a href="{% url 'search_data' %}?city={{ city }}" class="list-group-item"
+                            <a href="{% url 'search_data' %}?city={{ city }}" class="list-group-item "
                                id="id_city_{{ city }}">
                                 {{ city }}
                             </a>
@@ -24,7 +29,7 @@
                         $('#id_city_{{ query_city }}').addClass("active");
                     </script>
                 </div>
-                <div class="col-md-9 col-md-offset-1">
+                <div class="col-md-9 col-md-offset-1 ">
                     <div class="col-md-4 col-md-offset-8">
                         <form role="form" method="post" name="search_form">
                             {% csrf_token %}
@@ -44,28 +49,29 @@
                             }, 1500);
                         }
                     </script>
+
                     <table class="table table-hover">
                         <thead>
                         <tr>
                             <th>#</th>
                             <th>房屋名称</th>
-                            <th>城市</th>
+                            <th style="width: 8%">城市</th>
                             <th>价格</th>
                             <th>面积</th>
-                            <th>居住人数</th>
-                            <th>床规格</th>
+                            <th style="width: 12%">居住人数</th>
+
                         </tr>
                         </thead>
                         <tbody>
                         {% for house in house_list %}
-                            <tr>
+                            <tr >
                                 <td>{{ forloop.counter }}</td>
-                                <td><a href="{% url 'detail' %}?id={{ house.id }}">{{ house.name }}</a></td>
-                                <td>{{ house.city }}</td>
+                                <td><a href="{% url 'detail'  %}?id={{ house.id }}">{{ house.name }}</a></td>
+                                <td >{{ house.city }}</td>
                                 <td>{{ house.price }}</td>
                                 <td>{{ house.area }}</td>
                                 <td>{{ house.numofman }}</td>
-                                <td>{{ house.bedsize }}</td>
+
                             </tr>
                         {% empty %}
                             <tr>

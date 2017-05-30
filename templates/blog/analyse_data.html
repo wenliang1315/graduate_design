@@ -1,10 +1,227 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "blog/base.html" %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}维度分析{% endblock %}
+{% block content %}
 
-</body>
-</html>
+     <div class="page-header">
+         <h1>
+             &emsp;&emsp;&emsp;&emsp;数据分析 <small>——房屋评论信息的可视化呈现</small>
+         </h1>
+     </div>
+     <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+
+                <div class="tabbable" id="tabs-140857">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#panel-weidu" data-toggle="tab">维度分析</a>
+					</li>
+
+				</ul>
+
+				<div class="tab-content">
+					<div class="tab-pane active" id="panel-weidu">
+                    <br/><br/>
+                    <div class="row-fluid">
+                        <div class="span3">
+                           <div class="col-md-3">
+                                <div class="list-group" >
+                        <a href="{% url 'search_data' %}" class="list-group-item active"  id="id_city_all">
+                            选择城市查看分析结果
+                        </a>
+                            {% for city in city_list %}
+                            <a href="{% url 'analyse_data' %}?city={{ city }}" class="list-group-item "
+                               id="id_city_{{ city }}">
+                                {{ city }}
+                            </a>
+                            {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="span9">
+                        <h2>
+				        维度分析介绍
+			            </h2>
+                        <br/>
+			            <dl >
+                        <dt>
+                            维度的选取
+                        </dt>
+                        <dd>
+                            根据评论内容，选取服务、环境和交通三个维度进行分析。
+                        </dd>
+                        <dt>
+                            服务维度关键词：【房东回复 热情 周到】
+                        </dt>
+                        <dd>
+                            从某种程度上来说，该房源的房东回复越多，可以认为该房东对于顾客信息的反馈越为重视。
+                        </dd>
+                        <dt>
+                            环境维度关键词：【宽敞 干净 整洁】
+                        </dt>
+                        <dd>
+                            根据评论内容，宽敞、干净和整洁是大多数评论会涉及的环境关键词。
+                        </dd>
+                        <dt>
+                            交通维度关键词：【位置好 地铁 交通便利】
+                        </dt>
+                        <dd>
+                            交通维度关键词比较广泛，根据评论内容，这里采用以上三个作为统计标准。
+                        </dd>
+                        </dl>
+                                <div id="维度1" style="height:400px"></div>
+                                    <!-- ECharts单文件引入 -->
+                                    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+                                    <script type="text/javascript">
+                                        var weidu_list = {{ weidu_list|safe }};
+                                        // 路径配置
+                                        require.config({
+                                            paths: {
+                                                echarts: 'http://echarts.baidu.com/build/dist'
+                                            }
+                                        });
+
+                                        // 使用
+                                        require(
+                                            [
+                                                'echarts',
+                                                'echarts/theme/macarons',
+                                                'echarts/chart/pie'// 使用柱状图就加载bar模块，按需加载
+
+                                            ],
+                                            function (ec,theme) {
+                                                // 基于准备好的dom，初始化echarts图表
+                                                var myChart = ec.init(document.getElementById('维度1'),theme);
+
+                                                var dataStyle = {
+                                                normal: {
+                                                    label: {show:false},
+                                                    labelLine: {show:false}
+                                                }
+                                            };
+                                            var placeHolderStyle = {
+                                                normal : {
+                                                    color: 'rgba(0,0,0,0)',
+                                                    label: {show:false},
+                                                    labelLine: {show:false}
+                                                },
+                                                emphasis : {
+                                                    color: 'rgba(0,0,0,0)'
+                                                }
+                                            };
+                                            option = {
+                                                title: {
+                                                    text: '维度分析',
+                                                    subtext: '维度：交通、环境、服务',
+                                                    sublink: '',
+                                                    x: 'center',
+                                                    y: 'center',
+                                                    itemGap: 20,
+                                                    textStyle : {
+                                                        color : 'rgba(30,144,255,0.8)',
+                                                        fontFamily : '微软雅黑',
+                                                        fontSize : 32,
+                                                        fontWeight : 'bolder'
+                                                    }
+                                                },
+                                                tooltip : {
+                                                    show: true,
+                                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                },
+                                                legend: {
+                                                    orient : 'vertical',
+                                                    x : document.getElementById('维度1').offsetWidth / 2,
+                                                    y : 45,
+                                                    itemGap:12,
+                                                    data:['服务维度','环境维度','交通维度']
+                                                },
+                                                toolbox: {
+                                                    show : true,
+                                                    feature : {
+                                                        mark : {show: true},
+                                                        dataView : {show: true, readOnly: false},
+                                                        restore : {show: true},
+                                                        saveAsImage : {show: true}
+                                                    }
+                                                },
+                                                series : [
+                                                    {
+                                                        name:'1',
+                                                        type:'pie',
+                                                        clockWise:false,
+                                                        radius : [125, 150],
+                                                        itemStyle : dataStyle,
+                                                        data:[
+                                                            {
+                                                                value:weidu_list[0],
+                                                                name:'服务维度'
+                                                            },
+                                                            {
+                                                                value:100-weidu_list[0],
+                                                                name:'invisible',
+                                                                itemStyle : placeHolderStyle
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        name:'2',
+                                                        type:'pie',
+                                                        clockWise:false,
+                                                        radius : [100, 125],
+                                                        itemStyle : dataStyle,
+                                                        data:[
+                                                            {
+                                                                value:weidu_list[1],
+                                                                name:'环境维度'
+                                                            },
+                                                            {
+                                                                value:100-weidu_list[1],
+                                                                name:'invisible',
+                                                                itemStyle : placeHolderStyle
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        name:'3',
+                                                        type:'pie',
+                                                        clockWise:false,
+                                                        radius : [75, 100],
+                                                        itemStyle : dataStyle,
+                                                        data:[
+                                                            {
+                                                                value:weidu_list[2],
+                                                                name:'交通维度'
+                                                            },
+                                                            {
+                                                                value:100-weidu_list[2],
+                                                                name:'invisible',
+                                                                itemStyle : placeHolderStyle
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            };
+
+                                                // 为echarts对象加载数据
+                                                myChart.setOption(option);
+                                            }
+                                        );
+                                    </script>
+
+                            </div>
+                            </div>
+                    </div>
+
+
+				</div>
+			</div>
+
+        </div>
+     </div>
+</div>
+     <script src="http://apps.bdimg.com/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{% endblock %}

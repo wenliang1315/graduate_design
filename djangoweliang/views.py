@@ -1,11 +1,16 @@
 from django.shortcuts import render
-from djangoweliang.models import MyUser,House
+from djangoweliang.models import MyUser,House,Reviews
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
+from weidu import weidu
+from cutwords import cutwords
+import json
+import logging
 from django.http import HttpResponse
 
 
@@ -18,11 +23,28 @@ def index(request):
     }
     return render(request, 'blog/index.html', content)
 
-def search_data(request):
-    return render(request,'blog/search_data.html',{})
+def analyse_reci(request):
+    city_list = House.objects.values_list('city', flat=True).distinct()
+    query_city = request.GET.get('city', '北京')
+    f = query_city + 'detail.xlsx'
+    reci_list = cutwords(f)
+    content = {
+        'reci_list': json.dumps(reci_list),
+        'city_list': city_list,
+    }
+    return render(request, 'blog/analyse_reci.html', content)
+
 
 def analyse_data(request):
-    return render(request,'blog/analyse_data.html',{})
+    city_list = House.objects.values_list('city', flat=True).distinct()
+    query_city = request.GET.get('city', '成都')
+    f = query_city+'detail.xlsx'
+    weidu_list = weidu(f)
+    content = {
+        'weidu_list': json.dumps(weidu_list),
+        'city_list': city_list,
+    }
+    return render(request,'blog/analyse_data.html',content)
 
 def signup(request):
 
@@ -117,7 +139,7 @@ def search_data(request):
 
     if request.method == 'POST':
         keyword = request.POST.get('keyword', '')
-        house_list = House.objects.filter(name__contains=keyword)
+        house_list = House.objects.filter(Q(name__contains=keyword)|Q(price__contains=keyword)|Q(city__contains=keyword)|Q(area__contains=keyword)|Q(bedsize__contains=keyword)|Q(numofman__contains=keyword))#(name__contains =keyword)
         query_city = 'all'
 
     paginator = Paginator(house_list, 10)
@@ -136,3 +158,16 @@ def search_data(request):
         'house_list': house_list,
     }
     return render(request, 'blog/search_data.html', content)
+
+def detail(request):
+    user = request.user if request.user.is_authenticated() else None
+    house_id = request.GET.get('id', '')
+    house = House.objects.get(pk=house_id)
+    description_list = Reviews.objects.filter(namer = house.name)
+    content = {
+        'user': user,
+        'active_menu': 'search_data',
+        'house': house,
+        'description_list': description_list,
+    }
+    return render(request, 'blog/detail.html', content)

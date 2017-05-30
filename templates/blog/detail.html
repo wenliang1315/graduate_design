@@ -1,12 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "blog/base.html" %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}查看评论{% endblock %}
+{% block content %}
 
-</body>
-</html>
+    <br/><br/>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1">
 
+                <div class="col-md-10 col-md-offset-1">
+                    <h1 class="text-center">{{ house.name }}</h1>
+                    <br>
+                    <h4>地点：{{ house.city }}</h4>
+                    <h4>价格：{{ house.price }}</h4>
+                    <h4>面积：{{ house.area}}</h4>
+                    <h4>床规格：{{ house.bedsize }}</h4>
+                </div>
+            <br/>
+                <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th style="width: 95%">评论内容</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for description in description_list %}
+                            <tr >
+                                <td>{{ forloop.counter }}</td>
 
+                                <td>{{ description.description }}</td>
+
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td>#</td>
+                                <td>暂无相关信息</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

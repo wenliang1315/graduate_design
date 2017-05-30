@@ -10,6 +10,7 @@ class MyUser(models.Model):
         return self.user.username
 
 class House(models.Model):
+
     name = models.CharField(max_length=128)
     city = models.CharField(max_length=128)
     price = models.CharField(max_length=128)
@@ -22,6 +23,18 @@ class House(models.Model):
 
     def __str__(self):
         return self.name
+
+class Reviews(models.Model):
+    namer = models.CharField(max_length=128)
+    description = models.TextField()
+    house = models.ForeignKey(House)
+
+
+    class META:
+        ordering = ['namer']
+
+    def __str__(self):
+        return self.namer
 
 
 

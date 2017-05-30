@@ -1,0 +1,468 @@
+{% extends "blog/base.html" %}
+{% load staticfiles %}
+{% load static %}
+{% block title %}热词分析{% endblock %}
+{% block content %}
+
+     <div class="page-header">
+         <h1>
+             &emsp;&emsp;&emsp;&emsp;数据分析 <small>——房屋评论信息的可视化呈现</small>
+         </h1>
+     </div>
+     <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="tabbable" id="tabs-140857">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#panel-weidu" data-toggle="tab">热词分析</a>
+					</li>
+
+				</ul>
+
+				<div class="tab-content">
+					<div class="tab-pane active" id="panel-weidu">
+                    <br/><br/>
+                    <div class="row-fluid">
+                        <div class="span3">
+                           <div class="col-md-3">
+                                <div class="list-group" >
+                        <a href="{% url 'search_data' %}" class="list-group-item active"  id="id_city_all">
+                            选择城市查看分析结果
+                        </a>
+                            {% for city in city_list %}
+                            <a href="{% url 'analyse_reci' %}?city={{ city }}" class="list-group-item "
+                               id="id_city_{{ city }}">
+                                {{ city }}
+                            </a>
+                            {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="span9">
+                        <h2>
+				        热词分析介绍
+			            </h2>
+                        <br/>
+			            <dl >
+                        <dt>
+                            关于【jieba】python库
+                        </dt>
+                        <dd>
+                            jieba是一个python的第三方库，主要应用于文本切词和分词，支持多种不同的模式。
+                        </dd>
+                        <dt>
+                            关于剔除词库【stopwords】
+                        </dt>
+                        <dd>
+                            评论中有一些无意义的高频词，例如时间，地名等；在热词统计中需要将他们加入剔除词库。
+                        </dd>
+                        <dt>
+                            关于热词词性的选择
+                        </dt>
+                        <dd>
+                            根据评论内容，本次热词分析只选择了分词结果中的名词，以便更好地展现结果。
+                        </dd>
+                        <dt>
+                            关于热词分析
+                        </dt>
+                        <dd>
+                            系统读取所选地区的评论数据，并给出词频前10的热词，以玫瑰图和条形图的方式进行展示。
+                        </dd>
+                        <dd>
+                            由于加载第三方库需要时间，因此请您耐心等待可视化结果。
+                        </dd>
+                        </dl>
+
+                            <div id="main" style="height:400px"></div>
+                                <!-- ECharts单文件引入 -->
+                                <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+                                <script type="text/javascript">
+                                    var reci_list = {{ reci_list|safe }};
+                                    // 路径配置
+                                    require.config({
+                                        paths: {
+                                            echarts: 'http://echarts.baidu.com/build/dist'
+                                        }
+                                    });
+
+                                    // 使用
+                                    require(
+                                        [
+                                            'echarts',
+                                            'echarts/theme/macarons',
+                                            'echarts/chart/pie' // 使用柱状图就加载bar模块，按需加载
+                                        ],
+                                        function (ec,theme) {
+                                            // 基于准备好的dom，初始化echarts图表
+                                            var myChart = ec.init(document.getElementById('main'),theme);
+
+                                            option = {
+                                                title : {
+                                                    text: '评论数据热词分布',
+                                                    subtext: 'Top8热词',
+                                                    x:'center'
+                                                },
+                                                tooltip : {
+                                                    trigger: 'item',
+                                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                },
+                                                legend: {
+                                                    x : 'center',
+                                                    y : 'bottom',
+                                                    data:[reci_list[0][0],reci_list[1][0],reci_list[2][0],reci_list[3][0],reci_list[4][0],reci_list[5][0],reci_list[6][0],reci_list[7][0]]
+                                                },
+                                                toolbox: {
+                                                    show : true,
+                                                    feature : {
+                                                        mark : {show: true},
+                                                        dataView : {show: true, readOnly: false},
+                                                        magicType : {
+                                                            show: false,
+                                                            type: ['pie', 'funnel']
+                                                        },
+                                                        restore : {show: true},
+                                                        saveAsImage : {show: true}
+                                                    }
+                                                },
+                                                calculable : true,
+                                                series : [
+                                                    {
+                                                        name:'半径模式',
+                                                        type:'pie',
+                                                        radius : [20, 110],
+                                                        center : ['25%', 200],
+                                                        roseType : 'radius',
+                                                        width: '40%',       // for funnel
+                                                        max: 40,            // for funnel
+                                                        itemStyle : {
+                                                            normal : {
+                                                                label : {
+                                                                    show : false
+                                                                },
+                                                                labelLine : {
+                                                                    show : false
+                                                                }
+                                                            },
+                                                            emphasis : {
+                                                                label : {
+                                                                    show : true
+                                                                },
+                                                                labelLine : {
+                                                                    show : true
+                                                                }
+                                                            }
+                                                        },
+                                                        data:[
+                                                            {value:reci_list[0][1], name:reci_list[0][0]},
+                                                            {value:reci_list[1][1], name:reci_list[1][0]},
+                                                            {value:reci_list[2][1], name:reci_list[2][0]},
+                                                            {value:reci_list[3][1], name:reci_list[3][0]},
+                                                            {value:reci_list[4][1], name:reci_list[4][0]},
+                                                            {value:reci_list[5][1], name:reci_list[5][0]},
+                                                            {value:reci_list[6][1], name:reci_list[6][0]},
+                                                            {value:reci_list[7][1], name:reci_list[7][0]}
+                                                        ]
+                                                    },
+                                                    {
+                                                        name:'面积模式',
+                                                        type:'pie',
+                                                        radius : [30, 110],
+                                                        center : ['75%', 200],
+                                                        roseType : 'area',
+                                                        x: '50%',               // for funnel
+                                                        max: 40,                // for funnel
+                                                        sort : 'ascending',     // for funnel
+                                                        data:[
+                                                            {value:reci_list[0][1], name:reci_list[0][0]},
+                                                            {value:reci_list[1][1], name:reci_list[1][0]},
+                                                            {value:reci_list[2][1], name:reci_list[2][0]},
+                                                            {value:reci_list[3][1], name:reci_list[3][0]},
+                                                            {value:reci_list[4][1], name:reci_list[4][0]},
+                                                            {value:reci_list[5][1], name:reci_list[5][0]},
+                                                            {value:reci_list[6][1], name:reci_list[6][0]},
+                                                            {value:reci_list[7][1], name:reci_list[7][0]}
+                                                        ]
+                                                    }
+                                                ]
+                                            };
+
+                                            // 为echarts对象加载数据
+                                            myChart.setOption(option);
+                                        }
+                                    );
+                                </script>
+
+                            <br/><br/><br/><br/><br/>
+                            <div id="main1" style="height:400px"></div>
+                                <!-- ECharts单文件引入 -->
+                                <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+                                <script type="text/javascript">
+                                    var reci_list = {{ reci_list|safe }};
+                                    // 路径配置
+                                    require.config({
+                                        paths: {
+                                            echarts: 'http://echarts.baidu.com/build/dist'
+                                        }
+                                    });
+
+                                    // 使用
+                                    require(
+                                        [
+                                            'echarts',
+                                            'echarts/theme/macarons',
+                                            'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
+                                        ],
+                                        function (ec,theme) {
+                                            // 基于准备好的dom，初始化echarts图表
+                                            var myChart = ec.init(document.getElementById('main1'),theme);
+
+                                            option1 = {
+                                                title: {
+                                                    x: 'center',
+                                                    text: '评论数据热词分布',
+                                                    subtext: 'top8热词',
+                                                    link: '#'
+                                                },
+                                                tooltip: {
+                                                    trigger: 'item'
+                                                },
+                                                toolbox: {
+                                                    show: true,
+                                                    feature: {
+                                                        dataView: {show: true, readOnly: false},
+                                                        restore: {show: true},
+                                                        saveAsImage: {show: true}
+                                                    }
+                                                },
+                                                calculable: true,
+                                                grid: {
+                                                    borderWidth: 0,
+                                                    y: 80,
+                                                    y2: 60
+                                                },
+                                                xAxis: [
+                                                    {
+                                                        type: 'category',
+                                                        show: false,
+                                                        data: [reci_list[0][0],reci_list[1][0],reci_list[2][0],reci_list[3][0],reci_list[4][0],reci_list[5][0],reci_list[6][0],reci_list[7][0]]
+                                                    }
+                                                ],
+                                                yAxis: [
+                                                    {
+                                                        type: 'value',
+                                                        show: false
+                                                    }
+                                                ],
+                                                series: [
+                                                    {
+                                                        name: 'ECharts例子个数统计',
+                                                        type: 'bar',
+                                                        itemStyle: {
+                                                            normal: {
+                                                                color: function(params) {
+                                                                    // build a color map as your need.
+                                                                    var colorList = [
+                                                                      '#C1232B','#B5C334','#FCCE10','#E87C25','#27727B',
+                                                                       '#FE8463','#9BCA63','#FAD860','#F3A43B','#60C0DD',
+                                                                       '#D7504B','#C6E579','#F4E001','#F0805A','#26C0C0'
+                                                                    ];
+                                                                    return colorList[params.dataIndex]
+                                                                },
+                                                                label: {
+                                                                    show: true,
+                                                                    position: 'top',
+                                                                    formatter: '{b}\n{c}'
+                                                                }
+                                                            }
+                                                        },
+                                                        data: [reci_list[0][1],reci_list[1][1],reci_list[2][1],reci_list[3][1],reci_list[4][1],reci_list[5][1],reci_list[6][1],reci_list[7][1]],
+                                                        markPoint: {
+                                                            tooltip: {
+                                                                trigger: 'item',
+                                                                backgroundColor: 'rgba(0,0,0,0)',
+                                                                formatter: function(params){
+                                                                    return '<img src="'
+                                                                            + params.data.symbol.replace('image://', '')
+                                                                            + '"/>';
+                                                                }
+                                                            },
+                                                            data: [
+                                                                {xAxis:0, y: 350, name:'Line', symbolSize:20, symbol: 'image://../asset/ico/折线图.png'},
+                                                                {xAxis:1, y: 350, name:'Bar', symbolSize:20, symbol: 'image://../asset/ico/柱状图.png'},
+                                                                {xAxis:2, y: 350, name:'Scatter', symbolSize:20, symbol: 'image://../asset/ico/散点图.png'},
+                                                                {xAxis:3, y: 350, name:'KKKK', symbolSize:20, symbol: 'image://../asset/ico/K线图.png'},
+                                                                {xAxis:4, y: 350, name:'Pie', symbolSize:20, symbol: 'image://../asset/ico/饼状图.png'},
+                                                                {xAxis:5, y: 350, name:'Radar', symbolSize:20, symbol: 'image://../asset/ico/雷达图.png'},
+                                                                {xAxis:6, y: 350, name:'Chord', symbolSize:20, symbol: 'image://../asset/ico/和弦图.png'},
+                                                                {xAxis:7, y: 350, name:'Force', symbolSize:20, symbol: 'image://../asset/ico/力导向图.png'},
+                                                                {xAxis:8, y: 350, name:'Map', symbolSize:20, symbol: 'image://../asset/ico/地图.png'},
+
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            };
+                                    // 为echarts对象加载数据
+                                            myChart.setOption(option1);
+                                        }
+                                    );
+                                </script>
+
+                            <br/><br/><br/><br/><br/>
+                            <div id="main2" style="height:400px"></div>
+                                <!-- ECharts单文件引入 -->
+                                <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+                                <script type="text/javascript">
+                                    var reci_list = {{ reci_list|safe }};
+                                    // 路径配置
+                                    require.config({
+                                        paths: {
+                                            echarts: 'http://echarts.baidu.com/build/dist'
+                                        }
+                                    });
+
+                                    // 使用
+                                    require(
+                                        [
+                                            'echarts',
+                                            'echarts/theme/macarons',
+                                            'echarts/chart/wordCloud' // 使用柱状图就加载bar模块，按需加载
+                                        ],
+                                        function (ec,theme) {
+                                            // 基于准备好的dom，初始化echarts图表
+                                            var myChart = ec.init(document.getElementById('main2'),theme);
+
+
+                                            function createRandomItemStyle() {
+                                                return {
+                                                    normal: {
+                                                        color: 'rgb(' + [
+                                                            Math.round(Math.random() * 160),
+                                                            Math.round(Math.random() * 160),
+                                                            Math.round(Math.random() * 160)
+                                                        ].join(',') + ')'
+                                                    }
+                                                };
+                                            }
+
+                                            option2 = {
+                                                title: {
+                                                    text: '评论数据热词云图',
+                                                    link: '#'
+                                                },
+                                                tooltip: {
+                                                    show: true
+                                                },
+                                                series: [{
+                                                    name: 'Google Trends',
+                                                    type: 'wordCloud',
+                                                    size: ['80%', '80%'],
+                                                    textRotation : [0, 45, 90, -45],
+                                                    textPadding: 0,
+                                                    autoSize: {
+                                                        enable: true,
+                                                        minSize: 14
+                                                    },
+                                                    data: [
+                                                        {
+                                                            name: reci_list[0][0],
+                                                            value: reci_list[0][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[1][0],
+                                                            value: reci_list[1][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[2][0],
+                                                            value: reci_list[2][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[3][0],
+                                                            value: reci_list[3][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[4][0],
+                                                            value: reci_list[4][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[5][0],
+                                                            value: reci_list[5][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[6][0],
+                                                            value: reci_list[6][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[7][0],
+                                                            value: reci_list[7][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[8][0],
+                                                            value: reci_list[8][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[9][0],
+                                                            value: reci_list[9][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[10][0],
+                                                            value: reci_list[10][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[11][0],
+                                                            value: reci_list[11][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[12][0],
+                                                            value: reci_list[12][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[13][0],
+                                                            value: reci_list[12][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        },
+                                                        {
+                                                            name: reci_list[14][0],
+                                                            value: reci_list[12][1]*10,
+                                                            itemStyle: createRandomItemStyle()
+                                                        }
+
+
+                                                    ]
+                                                }]
+                                            };
+                                    // 为echarts对象加载数据
+                                            myChart.setOption(option2);
+                                        }
+                                    );
+                                </script>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+				</div>
+			</div>
+
+        </div>
+     </div>
+</div>
+     <script src="http://apps.bdimg.com/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{% endblock %}
