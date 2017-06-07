@@ -139,7 +139,7 @@ def search_data(request):
 
     if request.method == 'POST':
         keyword = request.POST.get('keyword', '')
-        house_list = House.objects.filter(Q(name__contains=keyword)|Q(price__contains=keyword)|Q(city__contains=keyword)|Q(area__contains=keyword)|Q(bedsize__contains=keyword)|Q(numofman__contains=keyword))#(name__contains =keyword)
+        house_list = House.objects.filter(Q(name__contains=keyword)|Q(price__contains=keyword))#(name__contains =keyword)
         query_city = 'all'
 
     paginator = Paginator(house_list, 10)
